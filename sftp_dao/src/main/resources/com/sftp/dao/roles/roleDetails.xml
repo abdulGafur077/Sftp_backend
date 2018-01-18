@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="roleDetails">
+	<resultMap type="com.sftp.dto.roles.RoleDetailsDTO" id="result"></resultMap>
+	<parameterMap type="com.sftp.dto.roles.RoleDetailsDTO" id="param"></parameterMap>
+	
+	<select id="GetAllRoleDetails" resultMap="result">
+		SELECT rd.id, rd.roleName, rd.description FROM roledetails as rd WHERE rd.isActive = 1
+	</select>
+	
+	<select id="GetRoleDetailsById" resultMap="result" parameterType="int">
+		SELECT rd.id, rd.roleName, rd.description FROM roledetails as rd WHERE rd.isActive = 1 AND id =#{id}
+	</select>
+	
+	<select id="IsRoleDetailsExist" parameterMap="param" resultType="int">
+		SELECT count(id) AS id FROM roledetails WHERE roleName = #{roleName} AND isActive = 1
+		<if test="id>0">
+		    AND id != #{id}
+		</if>
+	</select>
+	
+	<insert id="insertRoleDetails" parameterMap="param" useGeneratedKeys="true" keyProperty="id">
+		INSERT into roledetails(roleName,shortName,description, isActive) 
+		VALUES(#{roleName}, #{shortName}, #{description}, #{isActive})
+	</insert>
+	
+	<update id="updateRoleDetails" parameterMap="param" useGeneratedKeys="true" keyProperty="id">
+		update roledetails set roleName=#{roleName}, shortName=#{shortName}, description=#{description} where id=#{id}
+	</update>
+	
+	<delete id="deleteRoleDetailsById" parameterMap="param">
+		delete from roledetails where id=#{id}
+	</delete>
+	
+	<select id="getRoleDetailsByRoleID" resultMap="result" parameterType="java.util.List">
+		SELECT cd.roleName, mrc.usergroupId,mrc.roleId from mappingusergrouprole AS mrc 
+		JOIN roledetails AS cd 
+		ON cd.id = mrc.roleId
+		WHERE cd.isActive=1 and mrc.usergroupId IN
+		<foreach collection="list" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<insert id="insertRoleDetailsToMapping" parameterMap="param" useGeneratedKeys="true" keyProperty="id">
+		INSERT into mappingusergrouprole(usergroupId,roleId) 
+		VALUES(#{usergroupId}, #{id}) 
+	</insert>
+	
+	<delete id="deleteRoleDetailsFromMapping" parameterType="int">
+		delete from mappingusergrouprole WHERE usergroupId = #{id}
+	</delete>
+</mapper>

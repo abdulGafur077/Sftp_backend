@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GroupDetails">
+	<resultMap type="com.sftp.dto.groups.GroupDetailsDTO" id="result"></resultMap>
+	<parameterMap type="com.sftp.dto.groups.GroupDetailsDTO" id="param"></parameterMap>
+	
+	<select id="GetAllGroupDetails" resultMap="result">
+		SELECT rd.id, rd.name, rd.description FROM usergroupdetails as rd WHERE rd.isActive = 1
+	</select>
+	
+	<select id="GetGroupDetailsById" resultMap="result" parameterType="int">
+		SELECT rd.id, rd.name, rd.description FROM usergroupdetails as rd WHERE rd.isActive = 1 AND id =#{id}
+	</select>
+	
+	<select id="IsGroupDetailsExist" parameterMap="param" resultType="int">
+		SELECT count(id) AS id FROM usergroupdetails WHERE name = #{name} AND isActive = 1
+		<if test="id>0">
+		    AND id != #{id}
+		</if>
+	</select>
+	
+	<insert id="insertGroupDetails" parameterMap="param" useGeneratedKeys="true" keyProperty="id">
+		INSERT into usergroupdetails(name,shortName,description, isActive) 
+		VALUES(#{name}, #{shortName}, #{description}, #{isActive})
+	</insert>
+	
+	<update id="updateGroupDetails" parameterMap="param" useGeneratedKeys="true" keyProperty="id">
+		update usergroupdetails set name=#{name}, shortName=#{shortName}, description=#{description} where id=#{id}
+	</update>
+	
+	<delete id="deleteGroupDetailsById" parameterMap="param">
+		delete from usergroupdetails where id=#{id}
+	</delete>
+</mapper>

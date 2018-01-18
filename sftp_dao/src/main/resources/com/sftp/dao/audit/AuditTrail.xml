@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AuditTrail">
+	<resultMap type="com.sftp.dto.capabilities.CapabilitiesDetailsDTO" id="auditTrailResult"/>
+	<parameterMap type="com.sftp.dto.capabilities.CapabilitiesDetailsDTO" id="auditTrailParam"/>
+	
+	<insert id="insertAuditTrail" parameterMap="auditTrailParam" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO audittrail ( module, message, performedBy, auditValue, actionPerformed, actionTime)
+		VALUES (#{module}, #{message}, #{performedBy}, #{auditValue}, #{actionPerformed}, #{actionTime})
+	</insert>
+	<select id="getAuditDetails" resultMap="auditTrailResult" parameterMap="auditTrailParam">
+		SELECT id, module, message, performedBy, actionPerformed, auditValue, actionTime FROM st_audittrail
+		WHERE 1 = 1
+		<if test="fromTime != null and fromTime != '' and toTime != null and toTime != ''">
+			AND actionTime BETWEEN #{fromTime} AND #{toTime}
+		</if>
+		<if test="modulesSelected != null and modulesSelected != ''">
+			AND module IN 
+			<foreach collection="modulesSelected" item="moduleName" open="(" separator="," close=")">
+				#{moduleName}
+			</foreach>
+		</if>
+		<if test="actionsSelected != null and actionsSelected != ''">
+			AND actionPerformed IN 
+			<foreach collection="actionsSelected" item="action" open="(" separator="," close=")">
+				#{action}
+			</foreach>
+		</if>
+		<if test="usersSelected != null and usersSelected != ''">
+			AND performedBy IN 
+			<foreach collection="usersSelected" item="performedBy" open="(" separator="," close=")">
+				#{performedBy}
+			</foreach>
+		</if>
+		<if test="auditMsg != null and auditMsg != ''">
+			AND message LIKE '%${auditMsg}%'
+		</if>
+		ORDER BY actionTime DESC
+	</select>
+</mapper>

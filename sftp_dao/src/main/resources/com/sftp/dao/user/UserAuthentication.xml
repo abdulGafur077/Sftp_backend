@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserAuthentication">
+	<resultMap type="com.sftp.dto.user.UserAuthenticationDTO" id="userAuthResult">
+		<result property="id" column="Id"/>
+	 	<result property="username" column="username"/>
+	 	<result property="password" column="password"/>
+	</resultMap>
+
+	<select id="getUserAuthenticationByUserLoginId" parameterType="java.lang.String" resultMap="userAuthResult" >
+		SELECT AUTH.id, AUTH.username, AUTH.password FROM authenticationdetails AS AUTH
+		WHERE AUTH.username = #{username}
+	</select>	
+	
+</mapper>

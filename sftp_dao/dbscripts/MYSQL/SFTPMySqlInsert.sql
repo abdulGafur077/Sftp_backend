@@ -1,0 +1,1 @@
+INSERT INTO authenticationdetails (username, password) VALUES ('shrigowri','sgs@123');
